@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Absen Kelas 7A</title>
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Montserrat',sans-serif;
+    }
+
+    body{
+      background:#000;
+      color:white;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:15px;
+      margin-bottom:25px;
+    }
+
+    .title h1{
+      font-size:2.5rem;
+      margin-bottom:10px;
+    }
+
+    .title p{
+      color:#888;
+    }
+
+    .date{
+      background:#111;
+      border:1px solid #222;
+      padding:14px 18px;
+      border-radius:16px;
+      color:#aaa;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:15px;
+      margin-bottom:25px;
+    }
+
+    .card{
+      background:#111;
+      border:1px solid #222;
+      border-radius:24px;
+      padding:20px;
+    }
+
+    .card h2{
+      font-size:2rem;
+      margin-bottom:8px;
+    }
+
+    .card p{
+      color:#999;
+    }
+
+    .table-box{
+      background:#111;
+      border:1px solid #222;
+      border-radius:24px;
+      overflow:hidden;
+      margin-bottom:25px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th{
+      background:white;
+      color:black;
+      padding:16px;
+    }
+
+    td{
+      padding:14px;
+      text-align:center;
+      border-bottom:1px solid #1c1c1c;
+    }
+
+    tr:hover{
+      background:#181818;
+    }
+
+    select{
+      background:#000;
+      color:white;
+      border:1px solid #333;
+      padding:10px;
+      border-radius:12px;
+      width:150px;
+      outline:none;
+    }
+
+    .summary{
+      background:#111;
+      border:1px solid #222;
+      border-radius:24px;
+      padding:25px;
+    }
+
+    .summary h2{
+      margin-bottom:20px;
+    }
+
+    .summary-list{
+      display:grid;
+      gap:12px;
+    }
+
+    .summary-item{
+      background:#181818;
+      border:1px solid #222;
+      border-radius:16px;
+      padding:15px;
+    }
+
+    .buttons{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:20px;
+    }
+
+    button{
+      border:none;
+      padding:14px 20px;
+      border-radius:14px;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:scale(1.03);
+    }
+
+    .send-btn{
+      background:white;
+      color:black;
+    }
+
+    .reset-btn{
+      background:#1f1f1f;
+      color:white;
+      border:1px solid #333;
+    }
+
+    @media(max-width:700px){
+
+      .title h1{
+        font-size:2rem;
+      }
+
+      table{
+        font-size:13px;
+      }
+
+      th,td{
+        padding:8px;
+      }
+
+      select{
+        width:100%;
+      }
+
+    }
+
+  </style>
+
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+
+      <div class="title">
+        <h1>📚 Dashboard Absen 7A</h1>
+        <p>Sistem Rekap Otomatis Walikelas</p>
+      </div>
+
+      <div class="date" id="tanggal"></div>
+
+    </div>
+
+    <div class="stats">
+
+      <div class="card">
+        <h2 id="hadirCount">0</h2>
+        <p>✅ Hadir</p>
+      </div>
+
+      <div class="card">
+        <h2 id="izinCount">0</h2>
+        <p>📄 Izin</p>
+      </div>
+
+      <div class="card">
+        <h2 id="sakitCount">0</h2>
+        <p>🤒 Sakit</p>
+      </div>
+
+      <div class="card">
+        <h2 id="alphaCount">0</h2>
+        <p>❌ Alpha</p>
+      </div>
+
+    </div>
+
+    <div class="table-box">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableBody"></tbody>
+
+      </table>
+
+    </div>
+
+    <div class="summary">
+
+      <h2>📋 Ringkasan Siswa Tidak Hadir</h2>
+
+      <div class="summary-list" id="summaryList"></div>
+
+      <div class="buttons">
+
+        <button class="send-btn" onclick="kirimWhatsApp()">
+          📤 Kirim Ke Walikelas
+        </button>
+
+        <button class="reset-btn" onclick="resetData()">
+          🗑 Reset Data
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const siswa = [
+      "Ahlam","Ainun","Alma","Alika","Asep","Defita","Dendi","devhi",
+      "Dzaki","Devi","Dila","Kaila","Khairil","Khalisa","Khanza","Lutpi",
+      "Mizan","Rafi","Salsa","Tegar","Umar","Vina","Wahyu","Xavier",
+      "Yusuf","Zahra","Adit","Bella","Cahya","Dimas","Elsa","Fikri"
+    ];
+
+    const nomorWaliKelas = "628123456789";
+
+    const tableBody =
+      document.getElementById("tableBody");
+
+    function loadTable(){
+
+      tableBody.innerHTML = "";
+
+      siswa.forEach((nama,index)=>{
+
+        const saved =
+          localStorage.getItem("absen_"+nama)
+          || "Hadir";
+
+        tableBody.innerHTML += `
+
+          <tr>
+
+            <td>${index+1}</td>
+
+            <td>${nama}</td>
+
+            <td>
+
+              <select onchange="saveData('${nama}',this.value)">
+
+                <option value="Hadir"
+                ${saved==="Hadir"?"selected":""}>
+                ✅ Hadir
+                </option>
+
+                <option value="Izin"
+                ${saved==="Izin"?"selected":""}>
+                📄 Izin
+                </option>
+
+                <option value="Sakit"
+                ${saved==="Sakit"?"selected":""}>
+                🤒 Sakit
+                </option>
+
+                <option value="Alpha"
+                ${saved==="Alpha"?"selected":""}>
+                ❌ Alpha
+                </option>
+
+              </select>
+
+            </td>
+
+          </tr>
+
+        `;
+
+      });
+
+      updateDashboard();
+
+    }
+
+    function saveData(nama,status){
+
+      localStorage.setItem(
+        "absen_"+nama,
+        status
+      );
+
+      updateDashboard();
+
+    }
+
+    function updateDashboard(){
+
+      let hadir = 0;
+      let izin = 0;
+      let sakit = 0;
+      let alpha = 0;
+
+      let summary = "";
+
+      siswa.forEach((nama)=>{
+
+        const status =
+          localStorage.getItem("absen_"+nama)
+          || "Hadir";
+
+        if(status==="Hadir") hadir++;
+        if(status==="Izin") izin++;
+        if(status==="Sakit") sakit++;
+        if(status==="Alpha") alpha++;
+
+        if(status!=="Hadir"){
+
+          summary += `
+            <div class="summary-item">
+              <b>${nama}</b> — ${status}
+            </div>
+          `;
+
+        }
+
+      });
+
+      document.getElementById("hadirCount")
+      .innerText = hadir;
+
+      document.getElementById("izinCount")
+      .innerText = izin;
+
+      document.getElementById("sakitCount")
+      .innerText = sakit;
+
+      document.getElementById("alphaCount")
+      .innerText = alpha;
+
+      if(summary===""){
+
+        summary = `
+          <div class="summary-item">
+            🎉 Semua siswa hadir hari ini
+          </div>
+        `;
+
+      }
+
+      document.getElementById("summaryList")
+      .innerHTML = summary;
+
+    }
+
+    function kirimWhatsApp(){
+
+      let pesan =
+`📚 REKAP ABSEN KELAS 7A
+
+`;
+
+      siswa.forEach((nama)=>{
+
+        const status =
+          localStorage.getItem("absen_"+nama)
+          || "Hadir";
+
+        if(status!=="Hadir"){
+
+          pesan +=
+`${nama} : ${status}
+`;
+
+        }
+
+      });
+
+      pesan += `
+━━━━━━━━━━
+✅ Rekap otomatis dari Dashboard Absen 7A`;
+
+      const url =
+`https://wa.me/6283895873459?text=${encodeURIComponent(pesan)}`;
+
+      window.open(url,'_blank');
+
+    }
+
+    function resetData(){
+
+      if(confirm("Reset semua data absen?")){
+
+        siswa.forEach((nama)=>{
+
+          localStorage.removeItem(
+            "absen_"+nama
+          );
+
+        });
+
+        loadTable();
+
+      }
+
+    }
+
+    const now = new Date();
+
+    document.getElementById("tanggal")
+    .innerHTML =
+      "📅 " +
+      now.toLocaleDateString("id-ID",{
+        weekday:"long",
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+      });
+
+    loadTable();
+
+  </script>
+
+</body>
+</html>
